@@ -149,7 +149,7 @@ for sellelem in sell:
             elif Decimal(buy[0][3] - sellelem[3]) > 0:
                 priceperpiece=buy[0][4]/buy[0][3]
                 sellpriceperpiece=sellelem[4]/sellelem[3]
-                dbcursor.execute("INSERT INTO transactions (tid_buy,tid_sell,date_buy,date_sell,asset,amount,amount_eur_buy,amount_eur_sell,date_diff) VALUES('"+ buy[0][0] + "', '" + sellelem[0] + "', '" + buy[0][1] + "', '" + sellelem[1] + "', '" + str(buy[0][2]) + "', '"  + str(sellelem[3]) + "', '" + str(priceperpiece*sellelem[3]) + "', '" + str(sellpriceperpiece*sellelem[4]) + "', '" + str(dateutil.parser.parse(sellelem[1])-dateutil.parser.parse(buy[0][1])) + "')")
+                dbcursor.execute("INSERT INTO transactions (tid_buy,tid_sell,date_buy,date_sell,asset,amount,amount_eur_buy,amount_eur_sell,date_diff) VALUES('"+ buy[0][0] + "', '" + sellelem[0] + "', '" + buy[0][1] + "', '" + sellelem[1] + "', '" + str(buy[0][2]) + "', '"  + str(sellelem[3]) + "', '" + str(priceperpiece*sellelem[3]) + "', '" + str(sellelem[4]) + "', '" + str(dateutil.parser.parse(sellelem[1])-dateutil.parser.parse(buy[0][1])) + "')")
             elif Decimal(buy[0][3] - sellelem[3]) < 0:
                 amount = sellelem[3]
                 sellprice = sellelem[4]
