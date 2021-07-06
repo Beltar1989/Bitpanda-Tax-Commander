@@ -14,3 +14,14 @@ python commander.py
 
 wait until Graphical Interface appear. With new csv or some changes its suggested to remove database file and restart.
 
+Notes:
+bitpanda.csv might not be complete
+If you got some advertisment coins its not listed.
+For example i got: 
+19 BEST (5Euro) on 8.01.2021
+ETH(5Euro) on 8.11.2018
+ICO not listed too
+
+Since last version they add some data before in csv, maybe edit line 24:
+        if dataptr > 7:
+to adjust start of values
