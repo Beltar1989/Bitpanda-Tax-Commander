@@ -21,7 +21,7 @@ with open('bitpanda.csv') as csvfile:
     csv_reader_object = csv.reader(csvfile, delimiter=',')
     for row in csv_reader_object:
         dataptr+=1
-        if dataptr > 5:
+        if dataptr > 7:
             if row[2] == "deposit":
                 dbcursor.execute("SELECT tid FROM deposit where tid='"+ row[0]+"'");
                 result = dbcursor.fetchall()
@@ -64,12 +64,13 @@ with open('bitpanda.csv') as csvfile:
                     print("is zero")
                     if row[7] == row[13]:
                         if row[7] != 'EUR':
-                            print("decrease fee: "+row[6] + "-" + row[12])
-                            row[6]= str(Decimal(row[6])+Decimal(row[12]))
+                                print("decrease fee: "+row[6] + "-" + row[12])
+                                row[6]= str(Decimal(row[6])+Decimal(row[12]))
+
                     dbcursor.execute("INSERT INTO sell (tid,date,asset_in,amount_in,amount_eur) VALUES('"+ row[0] + "', '" + row[1] + "', '" + row[7] + "', '" + row[6] +"', '" + row[4] +"')")
                 else:
                     print("is not zero")
-            if row[2] == "withdraw":
+            if row[2] == "withdrawal":
                 dbcursor.execute("SELECT tid FROM sell where tid='"+ row[0]+"'");
                 result = dbcursor.fetchall()
                 print (result)
@@ -79,8 +80,13 @@ with open('bitpanda.csv') as csvfile:
                         continue
                     if row[7] == row[13]:
                         if row[7] != 'EUR':
-                            print("decrease fee: "+row[6] + "-" + row[12])
-                            row[6]= str(Decimal(row[6])+Decimal(row[12]))
+                            if Decimal(row[6]) != 0:
+                                print("decrease fee: "+row[6] + "-" + row[12])
+                                row[6]= str(Decimal(row[6])+Decimal(row[12]))
+                            elif Decimal(row[12]) != 0:
+                                row[6]=row[12]
+                            else:
+                                continue
                     dbcursor.execute("INSERT INTO sell (tid,date,asset_in,amount_in,amount_eur,withdraw) VALUES('"+ row[0] + "', '" + row[1] + "', '" + row[7] + "', '" + row[6] +"', '" + row[4] +"', 1)")
                 else:
                     print("is not zero")
@@ -165,6 +171,7 @@ for sellelem in sell:
             print(sumspend)
             amount = sumspend[0][0]
             overleft=0
+            print(sellelem)
             sellperpiece=sellelem[4]/sellelem[3]
             for buyelem in buy:
                 print("buyelement:")
