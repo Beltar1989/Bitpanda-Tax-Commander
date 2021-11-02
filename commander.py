@@ -322,7 +322,34 @@ for asset in assets:
         sold=0
     if asset[0] != "EUR":
             assettable.insert('', 'end', value=[asset[0],str(round(Decimal(Decimal(bought).normalize()-Decimal(sold).normalize()).normalize(),10).normalize())])
-     
+ 
+columns = ('ASSET', 'AMOUNT_LEFT')
+assettabletaxfree = ttk.Treeview(root, height=40, columns=columns, show='headings')
+assettabletaxfree.grid(row=0, column=0, sticky='news')
+assettabletaxfree.heading(columns[0], text=columns[0])
+assettabletaxfree.column(columns[0], width=50)
+assettabletaxfree.heading(columns[1], text=columns[1])
+assettabletaxfree.column(columns[1], width=130)
+
+dbcursor.execute("SELECT DISTINCT asset_in FROM buy");
+assets=dbcursor.fetchall()
+print("Remaining:")
+for asset in assets:
+    dbcursor.execute("SELECT SUM(amount_in) FROM buy where asset_in='"+ asset[0] +"' and date < DATE('now','-1 year')");
+    bought = dbcursor.fetchall()[0][0]
+    dbcursor.execute("SELECT SUM(amount_in) FROM sell where asset_in='"+ asset[0] +"'");
+    sold = dbcursor.fetchall() [0][0]
+    if sold == None:
+        sold=0
+    if asset[0] != "EUR":
+            spendvalue = 0
+            if bought != None:
+                spendvalue = round(Decimal(Decimal(bought).normalize()-Decimal(sold).normalize()).normalize(),10).normalize()
+            if spendvalue < 0:
+                spendvalue=0
+            assettabletaxfree.insert('', 'end', value=[asset[0],str(spendvalue)])
+
+ 
 columns = ('tid_buy','tid_sell','date_buy','date_sell','asset','amount','amount_eur_buy','amount_eur_sell','date_diff','win')
 taxtransactiontable = ttk.Treeview(root, height=40, columns=columns, show='headings')
 taxtransactiontable.grid(row=0, column=0, sticky='news')
@@ -614,6 +641,20 @@ def DonateCallback():
    text.insert("6.0","TRX: tron:TBr1f1NHoVc16WazKK22arh6MF54frRf88\r\n")
    text.insert("7.0","Doge: dogecoin:DBFkUcgZwAESzRHD1cNsior83JcQrgubtW\r\n")
    text.place(x=2,y=2)
+ 
+def oneyear():
+   assettable.grid()
+   assettable.grid_remove()
+   assettabletaxfree.grid()
+   assettabletaxfree.grid_remove()
+   assettabletaxfree.place(x=3,y=10)
+ 
+def allasset():
+   assettable.grid()
+   assettable.grid_remove()
+   assettabletaxfree.grid()
+   assettabletaxfree.grid_remove()
+   assettable.place(x=3,y=10)
 
    
 transactiontable.grid()
@@ -633,5 +674,10 @@ B = ttk.Button(root, text ="Buy Transactions", command = enableBuyCallback)
 B.place(x=1240,y=5)
 B = ttk.Button(root, text ="Donate", command = DonateCallback)
 B.place(x=1700,y=5)
+B = ttk.Button(root, text ="all", command = allasset)
+B.place(x=5,y=850)
+B = ttk.Button(root, text =">1y", command = oneyear)
+B.place(x=90,y=850)
 BuyDetails.grid_remove()
+assettabletaxfree.grid_remove()
 root.mainloop()
